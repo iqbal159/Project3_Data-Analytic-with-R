@@ -49,10 +49,79 @@ ROCCC approach is used to determine the credibility of the data
 -   **C**urrent – It is up-to-date as it includes data until end of Dec 2022
 -   **C**ited - The data is cited and is available under Data License Agreement.
 
-**Data Limitation**
+## **PHASE 3: Process**
 
-A quick filtering and checking data for completeness shows that “start station name and ID” and “end station name and ID” for some rides are missing. Further observations suggest that the most missing data about “start station name” belongs to “electric bikes” as 201,975 out of 888,490 electric ride shares have missing data and it accounts for 22% of total electric-bike ride shares.
+Before we start analyzing, it is necessary to make sure data is clean, free of error and in the right format.
+### **Tasks:**
 
-This limitation could slightly affect our analysis for finding stations where most electric-bikes are taken but we can use “end station names” to locate our customers and this can be used for further analysis and potential marketing campaigns.
+ **1. Tools:** R Programming is used for its ability to handle huge datasets efficiently. Microsoft Excel is used for further analysis and visualization. 
+
+	# Install and Load packages in R
+ install.packages("tidyverse")
+ install.packages("lubridate")
+ library(tidyverse)
+ library(lubridate)
+
+**2. Organize**: 
+
+ #Import Data to R
+ Jan_22 <- read_csv("202201-divvy-tripdata.csv")
+ Feb_22 <- read_csv("202202-divvy-tripdata.csv")
+ Mar_22 <- read_csv("202203-divvy-tripdata.csv")
+ Apr_22 <- read_csv("202204-divvy-tripdata.csv")
+ May_22 <- read_csv("202205-divvy-tripdata.csv")
+ Jun_22 <- read_csv("202206-divvy-tripdata.csv")
+ Jul_22 <- read_csv("202207-divvy-tripdata.csv")
+ Aug_22 <- read_csv("202208-divvy-tripdata.csv")
+ Sep_22 <- read_csv("202209-divvy-tripdata.csv")
+ Oct_22 <- read_csv("202210-divvy-tripdata.csv")
+ Nov_22 <- read_csv("202211-divvy-tripdata.csv")
+ Dec_22 <- read_csv("202212-divvy-tripdata.csv")
+
+ #Combines all the dataset
+ trips_2022 <- rbind(Jan_22, Feb_22, Mar_22, Apr_22, May_22, Jun, Jul_22, Aug_22, Sep_22, Oct_22, Nov_22, Dec_22)
+
+**3. Sampling**: Due to limitation in computational power and efficiency purposes, I had to take a random sample without replacement out of 4,073,561 observations. Sample size is calculated as follow:
+ - Population size: 4,073,561
+ - Confidence level: 99.99%
+ - Margin of Error: 0.2
+ - Sample size: 767,554
+
+       >df <-read_csv("combined_datasets.csv",col_types=cols(start_station_id=col_character(),end_station_id = col_character()))
+       >sample_df <- sample_n(df, 767554, replace=F)
+       >write_csv(sample_df, "sample_dataset.csv")
+
+
+**4. Preparing for analysis**
+
+- Added column called “ride_length and calculated the length of each ride
+- Added new columns to calculate the following for each ride.
+	- Date
+	- Year
+	- Month
+	- Day
+	- Day of the week
+ - These columns provide additional opportunities to aggregate the data.
+
+		>df$date <- as.Date(df$started_at) df$year <- format(as.Date(df$date), "%Y") 
+		>df$month <- format(as.Date(df$date), "%m") 
+		>df$day <- format(as.Date(df$date), "%d")
+		>df <- df %>% 
+		>  mutate(ride_length = ended_at - started_at) %>%   
+		>  mutate(day_of_week = weekdays(as.Date(df$started_at)))
+
+**5. Check data for errors**: A quick sorting and filtering shows that in 1931 rows, there is a negative difference between two time periods (started_at and ended_at) which logically isn’t possible.
+	Removed the rows where trip duration is negative.
+
+	>df <- df %>%   
+		filter(ride_length > 0)
+
+**6. Clean column names and checked for duplicate records in rows.**
+
+    >df <- df %>%    
+	    clean_names() %>%    
+	    unique()
+    # Export cleaned df to a new csv 
+    write_csv(df,"2020-2021_divvy-tripdata_cleaned.csv")
 
 
