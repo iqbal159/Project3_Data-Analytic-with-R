@@ -56,15 +56,16 @@ Before we start analyzing, it is necessary to make sure data is clean, free of e
 
  **1. Tools:** R Programming is used for its ability to handle huge datasets efficiently. Microsoft Excel is used for further analysis and visualization. 
 
-	# Install and Load packages in R
+ - Install and Load packages in R
+ 
  install.packages("tidyverse")
  install.packages("lubridate")
  library(tidyverse)
  library(lubridate)
 
-**2. Organize**: 
+ **2. Organize**: 
 
- #Import Data to R
+ - Import Data to R
  Jan_22 <- read_csv("202201-divvy-tripdata.csv")
  Feb_22 <- read_csv("202202-divvy-tripdata.csv")
  Mar_22 <- read_csv("202203-divvy-tripdata.csv")
@@ -78,50 +79,124 @@ Before we start analyzing, it is necessary to make sure data is clean, free of e
  Nov_22 <- read_csv("202211-divvy-tripdata.csv")
  Dec_22 <- read_csv("202212-divvy-tripdata.csv")
 
- #Combines all the dataset
- trips_2022 <- rbind(Jan_22, Feb_22, Mar_22, Apr_22, May_22, Jun, Jul_22, Aug_22, Sep_22, Oct_22, Nov_22, Dec_22)
+- Check data structure for each dataset
+glimpse(Jan_22)
+glimpse(Feb_22)
+glimpse(Mar_22)
+glimpse(Apr_22)
+glimpse(May_22)
+glimpse(Jun_22)
+glimpse(Jul_22)
+glimpse(Aug_22)
+glimpse(Sep_22)
+glimpse(Oct_22)
+glimpse(Nov_22)
+glimpse(Dec_22)
 
-**3. Sampling**: Due to limitation in computational power and efficiency purposes, I had to take a random sample without replacement out of 4,073,561 observations. Sample size is calculated as follow:
- - Population size: 4,073,561
- - Confidence level: 99.99%
- - Margin of Error: 0.2
- - Sample size: 767,554
+*From the checking: Columns "started_at" and "ended_at" in Jan_22 data in character format.*
 
-       >df <-read_csv("combined_datasets.csv",col_types=cols(start_station_id=col_character(),end_station_id = col_character()))
-       >sample_df <- sample_n(df, 767554, replace=F)
-       >write_csv(sample_df, "sample_dataset.csv")
+- Change started_at, ended_at columns in Jan_22 from character to date format
+Jan_22$started_at <- as.POSIXct(Jan_22$started_at, format = "%m/%d/%Y %H:%M")
+Jan_22$ended_at <- as.POSIXct(Jan_22$ended_at, format = "%m/%d/%Y %H:%M")
+
+- Check again Jan_22 dataset
+glimpse(Jan_22)
+
+- Combines all the dataset
+trips_2022 <- rbind(Jan_22, Feb_22, Mar_22, Apr_22, May_22, Jun, Jul_22, Aug_22, Sep_22, Oct_22, Nov_22, Dec_22)
+
+- Checking the new dataset characteristics
+head(trips_2022) #see the first 6 rows of the data frame
+nrow(trips_2022) #how many rows are in the data frame
+colnames(trips_2022) #list of column names
+dim(trips_2022) #dimensions of the data frame
+summary(trips_2022) #statistical summary of data, mainly for numerics
+str(trips_2022) #see list of columns and data types
+glimpse(trips_2022) # displays the column name,data type,data values,additional information
+tail(trips_2022) #see the last 6 rows of the data frame
+
+- Write combined data frame as csv
+write.csv(trips_2022, "trips2022_all_raw.csv")
+
+**3. Preparing for analysis**
+
+- Remove unnecessary columns
+trips_2022 <- select(trips_2022, -c("start_lat","start_lng","end_lat","end_lng"))
+
+- Check that all ride ids are unique
+n_distinct(trips_2022$ride_id) == nrow(trips_2022)
+
+- Adding columns for date, month, year, day of the week into the data frame.
+trips_2022$date <- as.Date(trips_2022$started_at) 
+trips_2022$month <- format(as.Date(trips_2022$date), "%m")
+trips_2022$day <- format(as.Date(trips_2022$date), "%d")
+trips_2022$year <- format(as.Date(trips_2022$date), "%Y")
+trips_2022$day_of_week <- format(as.Date(trips_2022$date), "%A")
+
+- Add column called “ride_length" and calculated the length of each ride
+trips_2022$ride_length_sec <- as.numeric(trips_2022$ended_at - trips_2022$started_at)
+
+- Check the names of all the new columns
+colnames(trips_2022) 
+
+**4. Check and clean data for errors**
+
+- Removed rows which had negative ride_length
+	>cleantrips_22 <- trips_2022 %>%
+  	   >filter(ride_length_sec > 0)
+ 
+- Removed any rides that were shorter than 1 minute and longer than 24 hours
+	>cleantrips_22 <- cleantrips_22 %>% <br>
+  	   >filter(ride_length_sec > 60, ride_length_sec < 60*60*24)
+
+- Check again the "ride_length_sec" column
+	>summary(cleantrips_22$ride_length_sec)
+
+- Remove rows with NA values 
+	cleantrips_22 <- na.omit(cleantrips_22)
+
+- Remove duplicate rows
+	cleantrips_22 <- distinct(cleantrips_22)
+
+- Check new dimension of cleaned dataset
+dim(cleantrips_22)
+
+- Write clean data frame as csv
+	write.csv(cleantrips_22, "trips2022_cleaned.csv")
+
+**As summary: Raw data have 5667717 rows and 13 columns ; New clean dataset have 4291190 rows and 15 columns
+
+## PHASE 4: Analyzing Data
+Performed data aggregation using R Programming.
+- Click [here](https://github.com/skramazan/GDA_Capstone_Project_Cyclistic_Bike-share/blob/main/02.%20Analysis/analysis_script.R) to view the R script and the summary of complete analysis process.
+
+Further analysis were carried out to perform calculations, identify trends and relationships using PivotTable and Charts on Microsoft Excel.
+
+ - Click [here](https://github.com/skramazan/GDA_Capstone_Project_Cyclistic_Bike-share/tree/main/02.%20Analysis) to view individual Excel files used for analysis
+
+## PHASE 5: Share
+Microsoft PowerPoint is used for data visualization and presenting key insights.
+- Click [here](https://github.com/skramazan/GDA_Capstone_Project_Cyclistic_Bike-share/tree/main/03.%20Presentation) to download the presentation.
+
+## PHASE 6: Act
+After analizing, we reached to the following conclusion:
+- Casual riders take less number of rides but for longer durations.
+- Casual Riders are most active on weekends, and the months of June and July.
+- Casual riders mostly use bikes for recreational purposes.
+
+Here are my top 3 recommendations based on above key findings:
+1. Design riding packages by keeping recreational activities, weekend contests, and summer events in mind and offer special discounts and coupons on such events to encourage casual riders get annual membership.
+
+2. Design seasonal packages, It allows flexibility and encourages casual riders to get membership for specific periods if they are not willing to pay for annual subscription.
+
+3. Effective and efficient promotions by targeting casual riders at the busiest times and stations:
+	- Days: Weekends
+	- Months: February, June, and July
+	- Stations: Streeter Dr & Grand Ave, Lake Shore Dr & Monroe St, Millennium Park
 
 
-**4. Preparing for analysis**
+***Thanks for reading and Happy Analyzing!*** :smiley: :bar_chart:
 
-- Added column called “ride_length and calculated the length of each ride
-- Added new columns to calculate the following for each ride.
-	- Date
-	- Year
-	- Month
-	- Day
-	- Day of the week
- - These columns provide additional opportunities to aggregate the data.
-
-		>df$date <- as.Date(df$started_at) df$year <- format(as.Date(df$date), "%Y") 
-		>df$month <- format(as.Date(df$date), "%m") 
-		>df$day <- format(as.Date(df$date), "%d")
-		>df <- df %>% 
-		>  mutate(ride_length = ended_at - started_at) %>%   
-		>  mutate(day_of_week = weekdays(as.Date(df$started_at)))
-
-**5. Check data for errors**: A quick sorting and filtering shows that in 1931 rows, there is a negative difference between two time periods (started_at and ended_at) which logically isn’t possible.
-	Removed the rows where trip duration is negative.
-
-	>df <- df %>%   
-		filter(ride_length > 0)
-
-**6. Clean column names and checked for duplicate records in rows.**
-
-    >df <- df %>%    
-	    clean_names() %>%    
-	    unique()
-    # Export cleaned df to a new csv 
-    write_csv(df,"2020-2021_divvy-tripdata_cleaned.csv")
+ 
 
 
