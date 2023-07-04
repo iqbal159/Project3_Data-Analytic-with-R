@@ -19,8 +19,7 @@ annual memberships. _(Cyclistic membership)_ <br>
 ## **PHASE 1: Ask** 
 **Problem statements:**
  1. The differences between casual riders and annual members using the Cyclistic bikes?
- 2. Why would casual riders buy Cyclistic annual memberships?
- 3. How to influence casual riders to become annual members?
+ 2. How to influence casual riders to become annual members?
 
 **Business Task**
   - To identify how do annual members and casual riders use Cyclistic bikes differently.
@@ -53,126 +52,131 @@ ROCCC approach is used to determine the credibility of the data
 
 Before we start analyzing, it is necessary to make sure data is clean, free of error and in the right format.
 ### **Tasks:**
+Click [PHASE 3 - Processing Data.R](https://github.com/iqbal159/Project3_Data-Analytic-with-R/blob/53de26bad755876937c10ef79f7e0ddc24f9904c/PHASE%203%20-%20Processing%20Data.R) for R coding of this section.
 
- **1. Tools:** R Programming is used for its ability to handle huge datasets efficiently. Microsoft Excel is used for further analysis and visualization. 
+Below are the summary of the processes: 
+
+ **1. Tools:** R Programming is used for its ability to handle huge datasets efficiently. 
 
  - Install and Load packages in R
- 
- install.packages("tidyverse")
- install.packages("lubridate")
- library(tidyverse)
- library(lubridate)
 
  **2. Organize**: 
 
- - Import Data to R
- Jan_22 <- read_csv("202201-divvy-tripdata.csv")
- Feb_22 <- read_csv("202202-divvy-tripdata.csv")
- Mar_22 <- read_csv("202203-divvy-tripdata.csv")
- Apr_22 <- read_csv("202204-divvy-tripdata.csv")
- May_22 <- read_csv("202205-divvy-tripdata.csv")
- Jun_22 <- read_csv("202206-divvy-tripdata.csv")
- Jul_22 <- read_csv("202207-divvy-tripdata.csv")
- Aug_22 <- read_csv("202208-divvy-tripdata.csv")
- Sep_22 <- read_csv("202209-divvy-tripdata.csv")
- Oct_22 <- read_csv("202210-divvy-tripdata.csv")
- Nov_22 <- read_csv("202211-divvy-tripdata.csv")
- Dec_22 <- read_csv("202212-divvy-tripdata.csv")
+ - Import Data from csv dataset to R
+ - Check data structure for each dataset
 
-- Check data structure for each dataset
-glimpse(Jan_22)
-glimpse(Feb_22)
-glimpse(Mar_22)
-glimpse(Apr_22)
-glimpse(May_22)
-glimpse(Jun_22)
-glimpse(Jul_22)
-glimpse(Aug_22)
-glimpse(Sep_22)
-glimpse(Oct_22)
-glimpse(Nov_22)
-glimpse(Dec_22)
+*From the checking: Columns "started_at" and "ended_at" in Jan_22 data is in character format.*
 
-*From the checking: Columns "started_at" and "ended_at" in Jan_22 data in character format.*
-
-- Change started_at, ended_at columns in Jan_22 from character to date format
-Jan_22$started_at <- as.POSIXct(Jan_22$started_at, format = "%m/%d/%Y %H:%M")
-Jan_22$ended_at <- as.POSIXct(Jan_22$ended_at, format = "%m/%d/%Y %H:%M")
-
-- Check again Jan_22 dataset
-glimpse(Jan_22)
-
-- Combines all the dataset
-trips_2022 <- rbind(Jan_22, Feb_22, Mar_22, Apr_22, May_22, Jun, Jul_22, Aug_22, Sep_22, Oct_22, Nov_22, Dec_22)
-
-- Checking the new dataset characteristics
-head(trips_2022) #see the first 6 rows of the data frame
-nrow(trips_2022) #how many rows are in the data frame
-colnames(trips_2022) #list of column names
-dim(trips_2022) #dimensions of the data frame
-summary(trips_2022) #statistical summary of data, mainly for numerics
-str(trips_2022) #see list of columns and data types
-glimpse(trips_2022) # displays the column name,data type,data values,additional information
-tail(trips_2022) #see the last 6 rows of the data frame
-
-- Write combined data frame as csv
-write.csv(trips_2022, "trips2022_all_raw.csv")
+- Change "started_at", "ended_at" columns in Jan_22 from character to date format
+- Check again Jan_22 dataset to make sure the format is correct
+- Combines all the datasets to become one dataset
+- Checking the new dataset characteristics and columns
+- Write combined data frame as new raw csv files
 
 **3. Preparing for analysis**
 
-- Remove unnecessary columns
-trips_2022 <- select(trips_2022, -c("start_lat","start_lng","end_lat","end_lng"))
-
-- Check that all ride ids are unique
-n_distinct(trips_2022$ride_id) == nrow(trips_2022)
-
+- Remove unnecessary columns for analysis
+- Check that all ride ids are unique to make sure no repetitive data
 - Adding columns for date, month, year, day of the week into the data frame.
-trips_2022$date <- as.Date(trips_2022$started_at) 
-trips_2022$month <- format(as.Date(trips_2022$date), "%m")
-trips_2022$day <- format(as.Date(trips_2022$date), "%d")
-trips_2022$year <- format(as.Date(trips_2022$date), "%Y")
-trips_2022$day_of_week <- format(as.Date(trips_2022$date), "%A")
-
 - Add column called “ride_length" and calculated the length of each ride
-trips_2022$ride_length_sec <- as.numeric(trips_2022$ended_at - trips_2022$started_at)
-
-- Check the names of all the new columns
-colnames(trips_2022) 
+- Check the names of all the new columns to make sure we have all the columns necessary for analysis
 
 **4. Check and clean data for errors**
 
-- Removed rows which had negative ride_length
-	>cleantrips_22 <- trips_2022 %>%
-  	   >filter(ride_length_sec > 0)
- 
+- Removed rows which had negative ride_length, which should be impossible
 - Removed any rides that were shorter than 1 minute and longer than 24 hours
-	>cleantrips_22 <- cleantrips_22 %>% <br>
-  	   >filter(ride_length_sec > 60, ride_length_sec < 60*60*24)
-
-- Check again the "ride_length_sec" column
-	>summary(cleantrips_22$ride_length_sec)
-
+- Check again the "ride_length_sec" column to confirm our data within the timeframe
 - Remove rows with NA values 
-	cleantrips_22 <- na.omit(cleantrips_22)
-
-- Remove duplicate rows
-	cleantrips_22 <- distinct(cleantrips_22)
-
+- Remove any duplicate rows
 - Check new dimension of cleaned dataset
-dim(cleantrips_22)
+- Write clean data frame as new csv
 
-- Write clean data frame as csv
-	write.csv(cleantrips_22, "trips2022_cleaned.csv")
-
-**As summary: Raw data have 5667717 rows and 13 columns ; New clean dataset have 4291190 rows and 15 columns
+**As summary: Raw data have 5667717 rows and 13 columns and our new clean dataset now have 4291190 rows and 15 columns
 
 ## PHASE 4: Analyzing Data
-Performed data aggregation using R Programming.
-- Click [here](https://github.com/skramazan/GDA_Capstone_Project_Cyclistic_Bike-share/blob/main/02.%20Analysis/analysis_script.R) to view the R script and the summary of complete analysis process.
+Performed data aggregation using R Programming. <br>
+Click [PHASE 4 - Analyzing Data.R](https://github.com/iqbal159/Project3_Data-Analytic-with-R/blob/53de26bad755876937c10ef79f7e0ddc24f9904c/PHASE%204%20-%20Analyzing%20Data.R) for R coding of this section.
 
-Further analysis were carried out to perform calculations, identify trends and relationships using PivotTable and Charts on Microsoft Excel.
+Below are the summary and analyze items of the processes: 
 
- - Click [here](https://github.com/skramazan/GDA_Capstone_Project_Cyclistic_Bike-share/tree/main/02.%20Analysis) to view individual Excel files used for analysis
+#1. Average ride length for casual and member riders
+Avg_ride_length <- cleantrips_22 %>% 
+  mutate(weekday = wday(started_at, label = TRUE)) %>%
+  group_by(member_casual, weekday) %>% 
+  summarize(number_of_rides = n(), average_duration = mean((ride_length_sec)/60)) %>% 
+  arrange(member_casual, weekday) %>% 
+  ggplot(aes(x=weekday, y=average_duration, fill=member_casual)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Average Ride Duration",
+    subtitle = "Members vs Casual Riders",
+    x = "User type", 
+    y = "Average ride duration (minutes)",
+    fill = "User type") +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+Avg_ride_length
+
+#2. Daily Number of Rides
+daily_trips <- cleantrips_22 %>% 
+  mutate(weekday = wday(started_at, label = TRUE)) %>% 
+  group_by(member_casual, weekday) %>% 
+  summarize(number_of_rides = n()
+            ,average_duration = mean(ride_length_sec)) %>% 
+  arrange(member_casual, weekday)  %>%
+  ggplot(aes(x=weekday, y=number_of_rides, fill=member_casual))+
+  geom_col(position="dodge") +
+  labs(
+    title = "Number of Daily Rides",
+    subtitle = "Members vs Casual Riders",
+    x = "User type", 
+    y = "Number of rides",
+    fill = "User type") +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+daily_trips
+
+#3. Type of Rides
+cleantrips_22 %>% 
+  group_by(member_casual, rideable_type) %>%
+  summarize(num_rides = n()) %>% 
+  mutate(percent_rides = 100* num_rides/sum(num_rides))
+
+bike_type <- cleantrips_22 %>% 
+  group_by(rideable_type, member_casual) %>% 
+  filter(rideable_type == "classic_bike" | rideable_type == "electric_bike" | rideable_type == "docked_bike") %>% 
+  summarize(number_of_rides = n()
+            ,average_duration = mean(ride_length_sec)) %>% 
+  arrange(member_casual) %>% 
+  ggplot(aes(x=member_casual, y=number_of_rides, fill=rideable_type)) +
+  geom_col(position = "dodge") +
+  labs(
+    title = "Number of Rides with Type of Bikes",
+    subtitle = "Members vs Casual Riders",
+    x = "Membership type", 
+    y = "Number of rides",
+    fill = "Bike type", 
+    labels = c("classic_bike", "electric_bike", "docked_bike")) +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+
+bike_type
+
+#4. Monthly Number of Rides
+ggplot(data = cleantrips_22) +
+  geom_bar(mapping = aes(x = month, fill = member_casual), position = "dodge") +
+  labs(title="Monthly Ridership Trends", subtitle="Members vs Casual Riders", fill = "Rider Type") +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) 
+
+#5. Most used station by both user types
+top_stations <- cleantrips_22 %>%
+  count(start_station_name, member_casual, name = "number_of_rides") %>%
+  arrange(desc(number_of_rides)) %>%
+  head(5) %>%
+  ggplot(aes(x = number_of_rides, y = start_station_name, fill = member_casual)) +
+  geom_col(position = "dodge") +
+  labs(title = "Top 5 Most Used Stations", x = "Number of Rides", y = "Stations", fill = "Member Type")
+
+top_stations
 
 ## PHASE 5: Share
 Microsoft PowerPoint is used for data visualization and presenting key insights.
