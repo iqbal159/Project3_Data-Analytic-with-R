@@ -97,96 +97,44 @@ Below are the summary of the processes:
 Performed data aggregation using R Programming. <br>
 Click [PHASE 4 - Analyzing Data.R](https://github.com/iqbal159/Project3_Data-Analytic-with-R/blob/53de26bad755876937c10ef79f7e0ddc24f9904c/PHASE%204%20-%20Analyzing%20Data.R) for R coding of this section.
 
-Below are the summary and analyze items of the processes: 
+Below are the summary of the analyze items of the processes: 
 
-#1. Average ride length for casual and member riders
-Avg_ride_length <- cleantrips_22 %>% 
-  mutate(weekday = wday(started_at, label = TRUE)) %>%
-  group_by(member_casual, weekday) %>% 
-  summarize(number_of_rides = n(), average_duration = mean((ride_length_sec)/60)) %>% 
-  arrange(member_casual, weekday) %>% 
-  ggplot(aes(x=weekday, y=average_duration, fill=member_casual)) +
-  geom_col(position = "dodge") +
-  labs(
-    title = "Average Ride Duration",
-    subtitle = "Members vs Casual Riders",
-    x = "User type", 
-    y = "Average ride duration (minutes)",
-    fill = "User type") +
-  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+1. Average Ride Length for Casual and Member Riders
+- To compare daily average usage of bikes for Casual and Member Riders
 
-Avg_ride_length
+![1  Average Ride Duration](https://github.com/iqbal159/Project3_Data-Analytic-with-R/assets/130142247/db76910c-cd40-4350-a04d-145c0c7720c8)
 
-#2. Daily Number of Rides
-daily_trips <- cleantrips_22 %>% 
-  mutate(weekday = wday(started_at, label = TRUE)) %>% 
-  group_by(member_casual, weekday) %>% 
-  summarize(number_of_rides = n()
-            ,average_duration = mean(ride_length_sec)) %>% 
-  arrange(member_casual, weekday)  %>%
-  ggplot(aes(x=weekday, y=number_of_rides, fill=member_casual))+
-  geom_col(position="dodge") +
-  labs(
-    title = "Number of Daily Rides",
-    subtitle = "Members vs Casual Riders",
-    x = "User type", 
-    y = "Number of rides",
-    fill = "User type") +
-  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+2. Daily Number of Rides for Casual and Member Riders
+- To compare total number of rides taken by Casual and Member Riders
 
-daily_trips
+![2  Number of Daily Rides](https://github.com/iqbal159/Project3_Data-Analytic-with-R/assets/130142247/85afe6ee-7838-4592-a715-bc6fe4c385a7)
 
-#3. Type of Rides
-cleantrips_22 %>% 
-  group_by(member_casual, rideable_type) %>%
-  summarize(num_rides = n()) %>% 
-  mutate(percent_rides = 100* num_rides/sum(num_rides))
+3. Type of Rides
+- To differentiate type of bikes used by Casual and Member Riders
+  
+![3  Number of Rides with Type of Bikes](https://github.com/iqbal159/Project3_Data-Analytic-with-R/assets/130142247/dab93d64-39c6-454e-9bc9-b3c1fbbace1a)
 
-bike_type <- cleantrips_22 %>% 
-  group_by(rideable_type, member_casual) %>% 
-  filter(rideable_type == "classic_bike" | rideable_type == "electric_bike" | rideable_type == "docked_bike") %>% 
-  summarize(number_of_rides = n()
-            ,average_duration = mean(ride_length_sec)) %>% 
-  arrange(member_casual) %>% 
-  ggplot(aes(x=member_casual, y=number_of_rides, fill=rideable_type)) +
-  geom_col(position = "dodge") +
-  labs(
-    title = "Number of Rides with Type of Bikes",
-    subtitle = "Members vs Casual Riders",
-    x = "Membership type", 
-    y = "Number of rides",
-    fill = "Bike type", 
-    labels = c("classic_bike", "electric_bike", "docked_bike")) +
-  scale_y_continuous(labels = function(x) format(x, scientific = FALSE))
+4. Monthly Number of Rides
+- To compare daily average usage of bikes for Casual and Member Riders
 
-bike_type
+ ![4  Monthly Number of Rides](https://github.com/iqbal159/Project3_Data-Analytic-with-R/assets/130142247/b209fff9-ca97-4cd6-8bf6-e2e3986f58e7)
 
-#4. Monthly Number of Rides
-ggplot(data = cleantrips_22) +
-  geom_bar(mapping = aes(x = month, fill = member_casual), position = "dodge") +
-  labs(title="Monthly Ridership Trends", subtitle="Members vs Casual Riders", fill = "Rider Type") +
-  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) 
+5. Most used station by both user types
+- Top 5 most used stations by all the users
 
-#5. Most used station by both user types
-top_stations <- cleantrips_22 %>%
-  count(start_station_name, member_casual, name = "number_of_rides") %>%
-  arrange(desc(number_of_rides)) %>%
-  head(5) %>%
-  ggplot(aes(x = number_of_rides, y = start_station_name, fill = member_casual)) +
-  geom_col(position = "dodge") +
-  labs(title = "Top 5 Most Used Stations", x = "Number of Rides", y = "Stations", fill = "Member Type")
-
-top_stations
+![5  Top 5 Most Used Stations](https://github.com/iqbal159/Project3_Data-Analytic-with-R/assets/130142247/e3c26819-33dc-4aff-b04e-4f48ef21d385)
 
 ## PHASE 5: Share
 Microsoft PowerPoint is used for data visualization and presenting key insights.
 - Click [here](https://github.com/skramazan/GDA_Capstone_Project_Cyclistic_Bike-share/tree/main/03.%20Presentation) to download the presentation.
 
 ## PHASE 6: Act
-After analizing, we reached to the following conclusion:
-- Casual riders take less number of rides but for longer durations.
-- Casual Riders are most active on weekends, and the months of June and July.
-- Casual riders mostly use bikes for recreational purposes.
+Based on 5 analyze points in the [Analyze Phase](https://github.com/iqbal159/Project3_Data-Analytic-with-R/blob/d90bf7a4cc6e255c4e0ed48236c21a8c86be19ed/PHASE%204%20-%20Analyzing%20Data.R) above, we reached to the following conclusion:
+- Casual riders use bikes for longer period of times on daily basis compare to Members.
+- Member Riders are mostly used bike on weekday, probably to commute for work, whereas Casual riders mostly use bikes on weekends, probably for recreational purposes.
+- Classic bikes are the most use as type of rides. But, only Casual members use docked bike.
+- Based on monthly analysis, middle of the year is the most number of rides, and the trend becomes lower towards early and end of the year
+- Based on our 5 most start station used, 4 of them are used by Casual riders.
 
 Here are my top 3 recommendations based on above key findings:
 1. Design riding packages by keeping recreational activities, weekend contests, and summer events in mind and offer special discounts and coupons on such events to encourage casual riders get annual membership.
