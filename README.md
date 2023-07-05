@@ -126,7 +126,7 @@ Below are the summary of the analyze items of the processes:
 
 ## PHASE 5: Share
 Microsoft PowerPoint is used for data visualization and presenting key insights.
-- Click [here](https://github.com/skramazan/GDA_Capstone_Project_Cyclistic_Bike-share/tree/main/03.%20Presentation) to download the presentation.
+- Click [here]() to download the presentation.
 
 ## PHASE 6: Act
 Based on 5 analyze points in the [Analyze Phase](https://github.com/iqbal159/Project3_Data-Analytic-with-R/blob/d90bf7a4cc6e255c4e0ed48236c21a8c86be19ed/PHASE%204%20-%20Analyzing%20Data.R) above, we reached to the following conclusion:
@@ -147,8 +147,46 @@ Here are my top 3 recommendations based on above key findings:
 	- Stations: Streeter Dr & Grand Ave, Lake Shore Dr & Monroe St, Millennium Park
 
 
-***Thanks for reading and Happy Analyzing!*** :smiley: :bar_chart:
 
+
+<h2>Discussion</h2>
+
+Insights from the analysis phase can help the marketing team answer the questions they have identified as the core of their program going forward. The data team can now provide an answer to the first question, "How do annual members and casual riders use Cyclistic differently?":
+- Members are more likely to ride on weekdays, whereas casual riders are more likely to ride on weekends
+- Members demonstrate peak useage overall on Wednesdays, and casual riders demonstrate peak useage on Saturdays
+- Casual riders are more likely to take long-duration rides; members average about half the ride length of casual riders overall
+- Both members and casual riders are more likely to ride in the summer months, with July being the most popular time to use a Cyclistic bike
+- Ridership in both categories is dramatically lower in January and February, when there is likely to be snow on the ground in Chicago
+
+While the data team did not explicitly investigate the question of "Why would casual riders buy Cyclistic annual memberships?", we can offer some insights based on the analysis here as well:
+- Casual riders might choose an annual membership if they decided to use Cyclistic bikes for their daily work commute or to run errands
+- For casual riders who frequently ride on the weekends, membership ($9/month) may be more cost-effective than repeatedly buying single-day passes ($15/day)
+- Casual riders who are offered a membership discount on a day they are already likely to be riding (Saturday) may be more likely to join
+
+Additionally, seasonal ridership data can help the marketing team understand "How can Cyclistic use digital media to influence casual riders to become members?":
+- Riders clearly enjoy being outside during Chicago summers, as these are peak ridership months for Cyclistic riders
+- Making membership more attractive in the months when riders are most likely to choose to use a Cyclistic bike could help convert casual riders to members
+
+<h2>Recommendations</h2>
+
+Based on this analysis, the data team would recommend to the marketing team the following, for the purposes of encouraging casual riders to become Cyclistic members:
+1. Offer weekend membership discounts to casual riders, especially during peak times for this demographic in June, July, and August
+2. Run fun, outdoors-centered digital media campaigns in the summer to remind riders that biking is fun, healthy, and environmentally friendly
+3. Run a marketing campaign to tout the wellness benefits and cost efficiency of biking to work, especially in a recession economy where gas is expensive
+
+
+
+
+# Recommendations
+
+#### Appeal to electric bike users.
+Casual riders take more trips on e-bikes than on classic bikes. Electric bikes are fun, easy to use, and somewhat novel. Communicating the advantages of membership for e-bike users could convert some casual users.
+
+#### Target casual cyclists riding for leisure.
+Casual riders take more trips on weekends. Advertising membership as a cost-effective way of exploring the city could resonate with people who don't have time to cycle during the week, and who want to use bikes for fun. Weekend or off-peak memberships could be an option to explore.
+
+#### Increase advertising at high-traffic stations.
+There are 5 stations that are heavily used by casual riders, all of which are located in the city center. Advertise membership to locals who want to get around Chicago to see parks, museums, and restaurants. 
  
 
 
